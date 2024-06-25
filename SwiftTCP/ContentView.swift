@@ -122,7 +122,7 @@ struct ContentView: View {
                         }
                     }
                     
-                    TextField("请输入内容", text: $inputText)
+                    TextField("请输入发送内容", text: $inputText)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         
                     
@@ -153,7 +153,7 @@ struct ContentView: View {
                     .padding([.leading, .bottom, .trailing])
                 }
                     List(receivedData, id: \.self) { data in
-                        Text("传感器数据: \(data)")
+                        Text("数据 \(data)")
                     }
                     .padding()
                     

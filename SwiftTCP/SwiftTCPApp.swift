@@ -14,10 +14,10 @@ struct MySwiftUIApp: App {
                     .tabItem {
                         Label("ABOUT", systemImage: "person")
                     }
-//                DebugInfoView()
-//                    .tabItem {
-//                        Label("ABOUT", systemImage: "person")
-//                    }
+                MAPs()
+                    .tabItem {
+                        Label("MAP", systemImage: "location")
+                    }
             }
         }
     }

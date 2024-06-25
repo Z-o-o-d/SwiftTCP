@@ -16,6 +16,7 @@
 		8B803E5D2C2AE5B300A9BFB1 /* SwiftTCPUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B803E5C2C2AE5B300A9BFB1 /* SwiftTCPUITestsLaunchTests.swift */; };
 		8B803E6A2C2B298C00A9BFB1 /* Setting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B803E692C2B298C00A9BFB1 /* Setting.swift */; };
 		8B803E6E2C2B2E5100A9BFB1 /* DebugUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B803E6D2C2B2E5100A9BFB1 /* DebugUI.swift */; };
+		8B803E702C2B484300A9BFB1 /* MAPs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B803E6F2C2B484300A9BFB1 /* MAPs.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		8B803E5C2C2AE5B300A9BFB1 /* SwiftTCPUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTCPUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		8B803E692C2B298C00A9BFB1 /* Setting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Setting.swift; sourceTree = "<group>"; };
 		8B803E6D2C2B2E5100A9BFB1 /* DebugUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUI.swift; sourceTree = "<group>"; };
+		8B803E6F2C2B484300A9BFB1 /* MAPs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAPs.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 		8B803E3D2C2AE5B100A9BFB1 /* SwiftTCP */ = {
 			isa = PBXGroup;
 			children = (
+				8B803E6F2C2B484300A9BFB1 /* MAPs.swift */,
 				8B803E3E2C2AE5B100A9BFB1 /* SwiftTCPApp.swift */,
 				8B803E402C2AE5B100A9BFB1 /* ContentView.swift */,
 				8B803E422C2AE5B300A9BFB1 /* Assets.xcassets */,
@@ -265,6 +268,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B803E702C2B484300A9BFB1 /* MAPs.swift in Sources */,
 				8B803E412C2AE5B100A9BFB1 /* ContentView.swift in Sources */,
 				8B803E6E2C2B2E5100A9BFB1 /* DebugUI.swift in Sources */,
 				8B803E3F2C2AE5B100A9BFB1 /* SwiftTCPApp.swift in Sources */,
