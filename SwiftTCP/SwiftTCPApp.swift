@@ -4,7 +4,21 @@ import SwiftUI
 struct MySwiftUIApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            
+            TabView {
+                ContentView()
+                    .tabItem {
+                        Label("TCP", systemImage: "network")
+                    }
+                Setting()
+                    .tabItem {
+                        Label("ABOUT", systemImage: "person")
+                    }
+//                DebugInfoView()
+//                    .tabItem {
+//                        Label("ABOUT", systemImage: "person")
+//                    }
+            }
         }
     }
 }
