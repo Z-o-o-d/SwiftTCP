@@ -10,14 +10,15 @@ struct MySwiftUIApp: App {
                     .tabItem {
                         Label("TCP", systemImage: "network")
                     }
-                Setting()
-                    .tabItem {
-                        Label("ABOUT", systemImage: "person")
-                    }
                 MAPs()
                     .tabItem {
                         Label("MAP", systemImage: "location")
                     }
+                Setting()
+                    .tabItem {
+                        Label("ABOUT", systemImage: "person")
+                    }
+                
             }
         }
     }
