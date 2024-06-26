@@ -1,6 +1,12 @@
 
 config ESP8266
 
+Suggests using #define on embedded programs 
+
+There will make a library using stm32 HAL later ，it should be a struct
+
+我摆了记得踢我一脚
+
 // 正常操作
 
 AT+RST\r\n                     // 重启设备
