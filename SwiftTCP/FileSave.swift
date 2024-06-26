@@ -55,9 +55,15 @@ struct FileSaveView: View {
            }
        }
        
-       func exportFile(_ file: URL) {
+    func exportFile(_ file: URL) {
            let activityViewController = UIActivityViewController(activityItems: [file], applicationActivities: nil)
+           
            if let rootViewController = UIApplication.shared.windows.first?.rootViewController {
+               if let popoverPresentationController = activityViewController.popoverPresentationController {
+                   popoverPresentationController.sourceView = rootViewController.view
+                   popoverPresentationController.sourceRect = CGRect(x: rootViewController.view.bounds.midX, y: rootViewController.view.bounds.midY, width: 0, height: 0)
+                   popoverPresentationController.permittedArrowDirections = []
+               }
                rootViewController.present(activityViewController, animated: true, completion: nil)
            }
        }

@@ -14,14 +14,14 @@ struct MySwiftUIApp: App {
                     .tabItem {
                         Label("FILEs", systemImage: "externaldrive")
                     }
-                MAPs()
-                    .tabItem {
-                        Label("MAP", systemImage: "location")
-                    }
-                Setting()
-                    .tabItem {
-                        Label("ABOUT", systemImage: "person")
-                    }
+//                MAPs()
+//                    .tabItem {
+//                        Label("MAP", systemImage: "location")
+//                    }
+//                Setting()
+//                    .tabItem {
+//                        Label("ABOUT", systemImage: "person")
+//                    }
                 
             }
         }
