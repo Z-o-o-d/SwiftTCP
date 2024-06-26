@@ -10,6 +10,10 @@ struct MySwiftUIApp: App {
                     .tabItem {
                         Label("TCP", systemImage: "network")
                     }
+                FileSaveView()
+                    .tabItem {
+                        Label("FILEs", systemImage: "externaldrive")
+                    }
                 MAPs()
                     .tabItem {
                         Label("MAP", systemImage: "location")

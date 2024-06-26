@@ -19,159 +19,176 @@ struct ContentView: View {
     @State private var tcpConnection: NWConnection?
     @State private var isConnected: Bool = false
     @State private var receivedData: [String] = []
+    @State private var cachedData: [String] = []
     @State private var sendCount: Int = 0
     @State private var receiveCount: Int = 0
     @State private var showWheelPickers: Bool = false
 
     var body: some View {
         GeometryReader { geometry in
-            VStack(spacing: 0) {
-                VStack(spacing: 10) {
-                    HStack(spacing: 20) {
-                        Button(action: {
-                            self.setupConnection()
-                            self.triggerImpactFeedback()
-                            UIApplication.shared.endEditing(true) // 收起键盘
-                        }) {
-                            Text("建立连接")
-                                .padding()
-                                .foregroundColor(.white)
-                                .background(Color.green)
-                                .cornerRadius(8)
-                        }
-                        .disabled(isConnected)
-                        .opacity(isConnected ? 0.5 : 1.0)
-                        
-                        Button(action: {
-                            self.cancelConnection()
-                            self.triggerImpactFeedback()
-                            UIApplication.shared.endEditing(true)
-                        }) {
-                            Text("断开连接")
-                                .padding()
-                                .foregroundColor(.white)
-                                .background(Color.red)
-                                .cornerRadius(8)
-                        }
-                        .disabled(!isConnected)
-                        .opacity(!isConnected ? 0.5 : 1.0)
-                        
-                        Button(action: {
-                            self.sendCloseCommand()
-                            self.triggerImpactFeedback()
-                            UIApplication.shared.endEditing(true)
-                        }) {
-                            Text("关闭连接")
-                                .padding()
-                                .foregroundColor(.white)
-                                .background(Color.orange)
-                                .cornerRadius(8)
-                        }
-                        .disabled(!isConnected)
-                        .opacity(!isConnected ? 0.5 : 1.0)
-                        
-                        
+            VStack(spacing: 10) {
+                HStack(spacing: 20) {
+                    Button(action: {
+                        self.setupConnection()
+                        self.triggerImpactFeedback()
+                        UIApplication.shared.endEditing(true) // 收起键盘
+                    }) {
+                        Text("建立连接")
+                            .padding()
+                            .foregroundColor(.white)
+                            .background(Color.green)
+                            .cornerRadius(8)
                     }
-                    
-                    if showWheelPickers {
-                        HStack(spacing: 0) {
-                            ForEach(0..<ipParts.count, id: \.self) { index in
-                                Picker("", selection: $ipParts[index]) {
-                                    ForEach(0..<256) { number in
-                                        Text("\(number)").tag(number)
-                                    }
-                                }
-                                .pickerStyle(WheelPickerStyle())
-                                .frame(width: geometry.size.width / 6, height: geometry.size.height / 8)
-                                .clipped()
-                            }
-                        }
-                        .padding(/*@START_MENU_TOKEN@*/.all, 5.0/*@END_MENU_TOKEN@*/)
-                        
-                        
-                        HStack(spacing: 0) {
-                            ForEach(0..<portParts.count, id: \.self) { index in
-                                Picker("", selection: $portParts[index]) {
-                                    ForEach(0..<10) { number in
-                                        Text("\(number)").tag(number)
-                                    }
-                                }
-                                .pickerStyle(WheelPickerStyle())
-                                .frame(width: geometry.size.width / 10, height: geometry.size.height / 8)
-                                .clipped()
-                            }
-                        }
-                        .padding()
+                    .disabled(isConnected)
+                    .opacity(isConnected ? 0.5 : 1.0)
+
+                    Button(action: {
+                        self.cancelConnection()
+                        self.triggerImpactFeedback()
+                        UIApplication.shared.endEditing(true)
+                    }) {
+                        Text("断开连接")
+                            .padding()
+                            .foregroundColor(.white)
+                            .background(Color.red)
+                            .cornerRadius(8)
                     }
-                    
-                    HStack {
-                        Text("远程IP:")
-                            .foregroundColor(.gray)
-                        Text("\(ipString())")
-                        Text(":")
-                            .foregroundColor(.gray)
-                        Text("\(portString())")
-                        Button(action: {
-                            withAnimation {
-                                self.showWheelPickers.toggle()
-                            }
-                        }) {
-                            Image(systemName: "arrowtriangle.down.fill")
-                                .foregroundColor(.blue)
-                                .rotationEffect(.degrees(showWheelPickers ? 180 : 90))
-                        }
+                    .disabled(!isConnected)
+                    .opacity(!isConnected ? 0.5 : 1.0)
+
+                    Button(action: {
+                        self.sendCloseCommand()
+                        self.triggerImpactFeedback()
+                        UIApplication.shared.endEditing(true)
+                    }) {
+                        Text("关闭连接")
+                            .padding()
+                            .foregroundColor(.white)
+                            .background(Color.orange)
+                            .cornerRadius(8)
                     }
+                    .disabled(!isConnected)
+                    .opacity(!isConnected ? 0.5 : 1.0)
+
                     
-                    TextField("请输入发送内容", text: $inputText)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        
-                    
-                    HStack {
-                        Button(action: {
-                            self.clearCounters()
-                            self.triggerImpactFeedback()
-                        }) {
-                            Text("清空计数")
-                                .padding()
-                                .foregroundColor(.white)
-                                .background(Color.gray)
-                                .cornerRadius(8)
-                        }
-                        
-                        Button(action: {
-                            self.sendDataOverTCP()
-                            UIApplication.shared.endEditing(true)
-                        }) {
-                            Text("发送数据")
-                                .padding()
-                                .foregroundColor(.white)
-                                .background(isConnected ? Color.blue : Color.gray)
-                                .cornerRadius(8)
-                        }
-                        .disabled(!isConnected)
-                    }
-                    .padding([.leading, .bottom, .trailing])
                 }
-                    List(receivedData, id: \.self) { data in
-                        Text("数据 \(data)")
+
+                
+
+                HStack {
+                    Text("远程IP:")
+                        .foregroundColor(.gray)
+                    Text("\(ipString())")
+                    Text(":")
+                        .foregroundColor(.gray)
+                    Text("\(portString())")
+                    Button(action: {
+                        withAnimation {
+                            self.showWheelPickers.toggle()
+                        }
+                    }) {
+                        Image(systemName: "arrowtriangle.down.fill")
+                            .foregroundColor(.blue)
+                            .rotationEffect(.degrees(showWheelPickers ? 0 : 90))
+                            .animation(.smooth)
+                    }
+                }
+                if showWheelPickers {
+                    HStack(spacing: 0) {
+                        ForEach(0..<ipParts.count, id: \.self) { index in
+                            Picker("", selection: $ipParts[index]) {
+                                ForEach(0..<256) { number in
+                                    Text("\(number)").tag(number)
+                                }
+                            }
+                            .pickerStyle(WheelPickerStyle())
+                            .frame(width: geometry.size.width / 6, height: geometry.size.height / 8)
+                            .clipped()
+                        }
                     }
                     .padding()
-                    
-                    HStack {
-                        Text("发送成功: \(sendCount)")
-                        Spacer()
-                        Text("接收成功: \(receiveCount)")
+
+                    HStack(spacing: 0) {
+                        ForEach(0..<portParts.count, id: \.self) { index in
+                            Picker("", selection: $portParts[index]) {
+                                ForEach(0..<10) { number in
+                                    Text("\(number)").tag(number)
+                                }
+                            }
+                            .pickerStyle(WheelPickerStyle())
+                            .frame(width: geometry.size.width / 10, height: geometry.size.height / 8)
+                            .clipped()
+                        }
                     }
-                    .padding(.vertical, 0.0)
-                    .foregroundColor(.gray)
+                    .padding()
+                }
+                
+                
+                TextField("请输入内容", text: $inputText)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+
+                HStack(spacing: 20) {
+                    Button(action: {
+                        self.saveDataToCSV()
+                        self.triggerImpactFeedback()
+                    }) {
+                        Text("保存数据")
+                            .foregroundColor(.white)
+                            .padding(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
+                            .background(Color.purple)
+                            .cornerRadius(8)
+                    }
+                    
+                    Button(action: {
+                        self.clearCounters()
+                        self.triggerImpactFeedback()
+                    }) {
+                        Text("清空计数")
+                            .padding()
+                            .foregroundColor(.white)
+                            .background(Color.gray)
+                            .cornerRadius(8)
+                    }
+
+                    Button(action: {
+                        self.sendDataOverTCP()
+                        UIApplication.shared.endEditing(true)
+                    }) {
+                        Text("发送数据")
+                            .padding()
+                            .foregroundColor(.white)
+                            .background(isConnected ? Color.blue : Color.gray)
+                            .cornerRadius(8)
+                    }
+                    .disabled(!isConnected)
+                    
+                    
+                }
+                
+
+                List(receivedData, id: \.self) { data in
+                    Text("传感器数据: \(data)")
                 }
                 .padding()
-                .onTapGesture {
-                    UIApplication.shared.endEditing(true)
+
+                HStack {
+                    Text("发送成功: \(sendCount)")
+                    Spacer()
+                    Text("接收成功: \(receiveCount)")
                 }
-            
+                .padding(.vertical, 0.0)
+                .foregroundColor(.gray)
+
+                
+            }
+            .padding()
+            .onTapGesture {
+                UIApplication.shared.endEditing(true)
+            }
         }
     }
+
     private func setupConnection() {
         guard let port = NWEndpoint.Port(portString()) else {
             return
@@ -269,6 +286,7 @@ struct ContentView: View {
         let dataContent = dataString.replacingOccurrences(of: "DATA:", with: "")
         let sensorDataArray = dataContent.components(separatedBy: ",")
         self.receivedData = sensorDataArray
+        self.cachedData.append(dataString) // 缓存数据
     }
 
     private func ipString() -> String {
@@ -288,6 +306,24 @@ struct ContentView: View {
     private func clearCounters() {
         sendCount = 0
         receiveCount = 0
+    }
+
+    private func saveDataToCSV() {
+        let fileName = "SensorData.csv"
+        let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(fileName)
+
+        var csvText = "Timestamp,SensorData\n"
+        for data in cachedData {
+            let timestamp = Date()
+            csvText.append("\(timestamp),\(data)\n")
+        }
+
+        do {
+            try csvText.write(to: path, atomically: true, encoding: .utf8)
+            print("CSV 文件已保存到：\(path)")
+        } catch {
+            print("保存 CSV 文件失败：\(error)")
+        }
     }
 }
 
