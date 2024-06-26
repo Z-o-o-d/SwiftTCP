@@ -19,7 +19,7 @@ struct ContentView: View {
     @State private var tcpConnection: NWConnection?
     @State private var isConnected: Bool = false
     @State private var receivedData: [String] = []
-    @State private var cachedData: [String] = []
+    @State private var cachedData: [(timestamp: String, data: String)] = []
     @State private var sendCount: Int = 0
     @State private var receiveCount: Int = 0
     @State private var showWheelPickers: Bool = false
@@ -31,7 +31,6 @@ struct ContentView: View {
                     Button(action: {
                         self.setupConnection()
                         self.triggerImpactFeedback()
-                        UIApplication.shared.endEditing(true) // 收起键盘
                     }) {
                         Text("建立连接")
                             .padding()
@@ -73,26 +72,6 @@ struct ContentView: View {
                     
                 }
 
-                
-
-                HStack {
-                    Text("远程IP:")
-                        .foregroundColor(.gray)
-                    Text("\(ipString())")
-                    Text(":")
-                        .foregroundColor(.gray)
-                    Text("\(portString())")
-                    Button(action: {
-                        withAnimation {
-                            self.showWheelPickers.toggle()
-                        }
-                    }) {
-                        Image(systemName: "arrowtriangle.down.fill")
-                            .foregroundColor(.blue)
-                            .rotationEffect(.degrees(showWheelPickers ? 0 : 90))
-                            .animation(.smooth)
-                    }
-                }
                 if showWheelPickers {
                     HStack(spacing: 0) {
                         ForEach(0..<ipParts.count, id: \.self) { index in
@@ -122,24 +101,46 @@ struct ContentView: View {
                     }
                     .padding()
                 }
-                
-                
-                TextField("请输入内容", text: $inputText)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
+
+                HStack {
+                    Text("远程IP:")
+                        .foregroundColor(.gray)
+                    Text("\(ipString())")
+                    Text(":")
+                        .foregroundColor(.gray)
+                    Text("\(portString())")
+                    Button(action: {
+                        withAnimation {
+                            self.showWheelPickers.toggle()
+                        }
+                    }) {
+                        Image(systemName: "arrowtriangle.down.fill")
+                            .foregroundColor(.blue)
+                            .rotationEffect(.degrees(showWheelPickers ? 180 : 90))
+                            .animation(.easeInOut)
+                    }
+                }
+
+                TextField("请输入内容", text: $inputText, onCommit: {
+                    self.sendDataOverTCP()
+                })
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding()
+
 
                 HStack(spacing: 20) {
+                    
                     Button(action: {
                         self.saveDataToCSV()
                         self.triggerImpactFeedback()
                     }) {
                         Text("保存数据")
+                            .padding()
                             .foregroundColor(.white)
-                            .padding(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
-                            .background(Color.purple)
+                            .background(Color.blue)
                             .cornerRadius(8)
                     }
-                    
+
                     Button(action: {
                         self.clearCounters()
                         self.triggerImpactFeedback()
@@ -153,7 +154,6 @@ struct ContentView: View {
 
                     Button(action: {
                         self.sendDataOverTCP()
-                        UIApplication.shared.endEditing(true)
                     }) {
                         Text("发送数据")
                             .padding()
@@ -162,10 +162,7 @@ struct ContentView: View {
                             .cornerRadius(8)
                     }
                     .disabled(!isConnected)
-                    
-                    
                 }
-                
 
                 List(receivedData, id: \.self) { data in
                     Text("传感器数据: \(data)")
@@ -262,8 +259,9 @@ struct ContentView: View {
         tcpConnection?.receive(minimumIncompleteLength: 1, maximumLength: 1024, completion: { (data, context, isComplete, error) in
             if let data = data, !data.isEmpty {
                 let receivedString = String(data: data, encoding: .utf8) ?? "无法解码数据"
+                let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .medium)
                 DispatchQueue.main.async {
-                    self.parseReceivedData(receivedString)
+                    self.parseReceivedData(receivedString, timestamp: timestamp)
                 }
                 print("接收到数据: \(receivedString)")
                 self.receiveCount += 1
@@ -278,7 +276,7 @@ struct ContentView: View {
         })
     }
 
-    private func parseReceivedData(_ dataString: String) {
+    private func parseReceivedData(_ dataString: String, timestamp: String) {
         guard dataString.hasPrefix("DATA:") else {
             return
         }
@@ -286,7 +284,7 @@ struct ContentView: View {
         let dataContent = dataString.replacingOccurrences(of: "DATA:", with: "")
         let sensorDataArray = dataContent.components(separatedBy: ",")
         self.receivedData = sensorDataArray
-        self.cachedData.append(dataString) // 缓存数据
+        self.cachedData.append((timestamp, dataString)) // 缓存带时间戳的数据
     }
 
     private func ipString() -> String {
@@ -309,12 +307,13 @@ struct ContentView: View {
     }
 
     private func saveDataToCSV() {
-        let fileName = "SensorData.csv"
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyMMdd_HHmm_ss"
+        let fileName = "\(dateFormatter.string(from: Date()))_SensorData.csv"
         let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(fileName)
 
         var csvText = "Timestamp,SensorData\n"
-        for data in cachedData {
-            let timestamp = Date()
+        for (timestamp, data) in cachedData {
             csvText.append("\(timestamp),\(data)\n")
         }
 
@@ -327,8 +326,6 @@ struct ContentView: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
+#Preview {
+    ContentView()
 }

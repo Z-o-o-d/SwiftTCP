@@ -18,11 +18,11 @@ struct MySwiftUIApp: App {
 //                    .tabItem {
 //                        Label("MAP", systemImage: "location")
 //                    }
-//                Setting()
-//                    .tabItem {
-//                        Label("ABOUT", systemImage: "person")
-//                    }
-                
+                Setting()
+                    .tabItem {
+                        Label("ABOUT", systemImage: "person")
+                    }
+//                
             }
         }
     }
